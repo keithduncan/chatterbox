@@ -1,5 +1,7 @@
 module Action.Subscriptions (
   listSubscriptions,
+  createSubscription,
+  deleteSubscription,
 ) where
 
 import Web.Scotty
