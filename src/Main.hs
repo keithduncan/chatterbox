@@ -1,10 +1,12 @@
 
-import System.Environment
+import System.Environment (lookupEnv)
 
 import Web.Scotty
 
-import Data.Maybe
-import Routes
+import Data.Maybe (maybe)
+
+import Routes (routes)
+import Configuration
 
 main :: IO ()
 main = getPort >>= runApplication

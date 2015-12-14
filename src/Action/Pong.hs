@@ -2,13 +2,12 @@ module Action.Pong (
   pong,
 ) where
 
-import Data.Time.Clock.POSIX
+import Data.Time.Clock.POSIX (getPOSIXTime)
 
-import Control.Monad
-import Control.Monad.IO.Class
+import Control.Monad.IO.Class (liftIO)
 
 import Web.Scotty
-import Network.HTTP.Types
+import Network.HTTP.Types (ok200)
 
 import Data.Map
 
