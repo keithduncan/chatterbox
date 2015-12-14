@@ -1,4 +1,4 @@
-module Subscriptions (
+module Action.Subscriptions (
   listSubscriptions,
 ) where
 

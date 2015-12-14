@@ -1,4 +1,4 @@
-module Topics (
+module Action.Topics (
   createMessage,
 ) where
 
