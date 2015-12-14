@@ -18,5 +18,10 @@ pong = do
 
   let ping = fromList [("status", "ok"), ("now", show sec)] :: Map String String
 
+  {-
+    - [ ] Check Redis connection
+    - [ ] Check Database connection
+  -}
+
   status ok200
   json ping
