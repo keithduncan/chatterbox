@@ -1,4 +1,4 @@
-module Models.Subscription (
+module Model.Subscription (
   Subscription,
   subscription,
   getURI,
