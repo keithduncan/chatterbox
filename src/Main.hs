@@ -27,7 +27,7 @@ getSettings = do
   return $ setPort port defaultSettings
 
 runApplication :: Config -> IO ()
-runApplication config = getOptions >>= (\options -> scottyOptsT options run routes)
-  where
-    run :: ConfigM Response -> IO Response
-    run m = runReaderT (runConfigM m) config
+runApplication config = getOptions >>= (\options -> scottyOptsT options (run config) routes)
+
+run :: Config -> ConfigM Response -> IO Response
+run config m = runReaderT (runConfigM m) config
