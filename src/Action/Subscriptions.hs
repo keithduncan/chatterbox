@@ -4,14 +4,21 @@ module Action.Subscriptions (
   deleteSubscription,
 ) where
 
-import Web.Scotty.Trans (ActionT)
+import Web.Scotty.Trans (ActionT, json)
 
-import Configuration
+import Control.Monad.Trans.Class (lift)
+import Control.Monad.Reader (asks)
 
+import Data.Aeson (Value (Null))
 import Data.Text.Lazy
 
+import Configuration
+import Database
+
 listSubscriptions :: ActionT Text ConfigM ()
-listSubscriptions = undefined
+listSubscriptions = do
+  database <- lift (asks database)
+  json Null
 
 createSubscription :: ActionT Text ConfigM ()
 createSubscription = undefined
