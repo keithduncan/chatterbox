@@ -5,6 +5,7 @@ module Routes (
 ) where
 
 import Web.Scotty
+import Network.HTTP.Types (status404)
 
 import Data.Aeson (Value (Null))
 
