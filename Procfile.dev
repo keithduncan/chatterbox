@@ -1,1 +1,2 @@
-web: cabal run
+web: cabal run chatterbox
+worker: cabal run chatterbox-worker
