@@ -2,6 +2,7 @@
 
 module Configuration (
   Config(..),
+  ConfigM(..),
 
   getConfig,
 ) where

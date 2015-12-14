@@ -4,13 +4,17 @@ module Action.Subscriptions (
   deleteSubscription,
 ) where
 
-import Web.Scotty
+import Web.Scotty.Trans (ActionT)
 
-listSubscriptions :: ActionM ()
+import Configuration
+
+import Data.Text.Lazy
+
+listSubscriptions :: ActionT Text ConfigM ()
 listSubscriptions = undefined
 
-createSubscription :: ActionM ()
+createSubscription :: ActionT Text ConfigM ()
 createSubscription = undefined
 
-deleteSubscription :: ActionM ()
+deleteSubscription :: ActionT Text ConfigM ()
 deleteSubscription = undefined

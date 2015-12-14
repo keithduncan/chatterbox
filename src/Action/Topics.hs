@@ -2,7 +2,11 @@ module Action.Topics (
   createMessage,
 ) where
 
-import Web.Scotty
+import Web.Scotty.Trans (ActionT)
 
-createMessage :: ActionM ()
+import Configuration
+
+import Data.Text.Lazy
+
+createMessage :: ActionT Text ConfigM ()
 createMessage = undefined

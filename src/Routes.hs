@@ -4,16 +4,19 @@ module Routes (
   routes
 ) where
 
-import Web.Scotty
+import Web.Scotty.Trans (ScottyT, get, post, delete, status, json, notFound)
 import Network.HTTP.Types (status404)
 
 import Data.Aeson (Value (Null))
+import Data.Text.Lazy
+
+import Configuration
 
 import Action.Pong
 import Action.Subscriptions
 import Action.Topics
 
-routes :: ScottyM ()
+routes :: ScottyT Text ConfigM ()
 routes = do
   get "/_ping" pong
 

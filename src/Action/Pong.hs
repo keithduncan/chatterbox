@@ -6,12 +6,15 @@ import Data.Time.Clock.POSIX (getPOSIXTime)
 
 import Control.Monad.IO.Class (liftIO)
 
-import Web.Scotty
+import Web.Scotty.Trans (ActionT, status, json)
 import Network.HTTP.Types (ok200)
 
-import Data.Map
+import Configuration
 
-pong :: ActionM ()
+import Data.Map
+import Data.Text.Lazy
+
+pong :: ActionT Text ConfigM ()
 pong = do
   sec <- liftIO getPOSIXTime
 
