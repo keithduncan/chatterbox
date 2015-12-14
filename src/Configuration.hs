@@ -10,9 +10,8 @@ module Configuration (
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Reader (MonadReader, ReaderT)
 
-data Workqueue = Workqueue
-
-data Database = Database
+import Database
+import Workqueue
 
 data Config = Config { workqueue :: Workqueue
                      , database :: Database
@@ -25,7 +24,3 @@ getConfig :: IO Config
 getConfig = Config <$>
   getWorkqueue <*>
   getDatabase
-
-getWorkqueue = return Workqueue
-
-getDatabase = return Database
