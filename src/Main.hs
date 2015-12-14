@@ -1,4 +1,3 @@
-
 import System.Environment (lookupEnv)
 
 import Web.Scotty.Trans (ScottyT, Options, scottyOptsT, settings, defaultHandler, middleware, json)
