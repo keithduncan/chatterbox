@@ -10,7 +10,7 @@ main :: IO ()
 main = getPort >>= runApplication
 
 getPort :: IO Int
-getPort = fromMaybe 3000 read <$> lookupEnv "PORT"
+getPort = maybe 3000 read <$> lookupEnv "PORT"
 
 runApplication :: Int -> IO ()
 runApplication port = scotty port routes
