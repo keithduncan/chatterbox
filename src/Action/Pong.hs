@@ -1,5 +1,5 @@
-module Action.Ping (
-  ping,
+module Action.Pong (
+  pong,
 ) where
 
 import Data.Time.Clock.POSIX
@@ -12,8 +12,8 @@ import Network.HTTP.Types
 
 import Data.Map
 
-ping :: ActionM ()
-ping = do
+pong :: ActionM ()
+pong = do
   sec <- liftIO getPOSIXTime
 
   let ping = fromList [("status", "ok"), ("now", show sec)] :: Map String String

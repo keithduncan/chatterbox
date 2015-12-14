@@ -2,8 +2,10 @@ module Routes (
   routes
 ) where
 
-import Action.Ping
+import Web.Scotty
+
+import Action.Pong
 
 routes :: ScottyM ()
 routes = do
-  get "/_ping" ping
+  get "/_ping" pong
