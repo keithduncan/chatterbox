@@ -4,7 +4,7 @@ module Routes (
   routes
 ) where
 
-import Web.Scotty.Trans (ScottyT, get, post, delete, status, json, notFound)
+import Web.Scotty.Trans (ScottyT, get, post, delete, status, json, notFound, defaultHandler)
 import Network.HTTP.Types (status404)
 
 import Data.Aeson (Value (Null))
