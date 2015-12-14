@@ -6,6 +6,8 @@ module Routes (
 
 import Web.Scotty
 
+import Data.Aeson (Value (Null))
+
 import Action.Pong
 import Action.Subscriptions
 import Action.Topics
@@ -21,3 +23,5 @@ routes = do
   get "/subscriptions" listSubscriptions
   post "/subscriptions" createSubscription
   delete "/subscriptions" deleteSubscription
+
+  notFound (status status404 >> json Null)
