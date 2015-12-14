@@ -35,18 +35,17 @@ runApplication :: Config -> IO ()
 runApplication config = do
   options <- getOptions
   environment <- getEnvironment
-  scottyOptsT options (run config) (fullRoutes environment)
+  scottyOptsT options (run config) (routes environment >> App.routes)
 
 run :: Config -> ConfigM Response -> IO Response
 run config m = runReaderT (runConfigM m) config
 
-logger :: Environment -> Network.Wai.Middleware
-logger Development = logStdoutDev
-logger _           = logStdout
-
-fullRoutes :: Environment -> ScottyT Text ConfigM ()
-fullRoutes env = do
+routes :: Environment -> ScottyT Text ConfigM ()
+routes env = do
   defaultHandler (\e -> json Null)
   middleware (logger env)
 
-  App.routes
+  where
+    logger :: Environment -> Network.Wai.Middleware
+    logger Development = logStdoutDev
+    logger _           = logStdout
