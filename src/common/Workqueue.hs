@@ -1,16 +1,34 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings #-}
+
 module Workqueue (
   Workqueue,
 
   getWorkqueue,
+
+  enqueueSay,
 ) where
+
+import System.Hworker
+
+import Control.Monad (void)
 
 import Model.Message
 import Model.Subscription (Topic)
 
-data Workqueue = Workqueue
+import Job.Say
+
+type SayWorker = Hworker ()
+
+data Workqueue = Workqueue { getSayWorker :: Hworker () SayJob
+                           }
 
 getWorkqueue :: IO Workqueue
-getWorkqueue = return Workqueue
+getWorkqueue = Workqueue <$>
+  getSayHworker
+
+getSayHworker :: IO (Hworker () SayJob)
+getSayHworker = create "say" ()
 
 enqueueSay :: Workqueue -> Topic -> Message -> IO ()
-enqueueSay _ _ _ = return ()
+enqueueSay (Workqueue sayWorker) topic message = void $ queue sayWorker (Say topic message)

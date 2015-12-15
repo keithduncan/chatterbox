@@ -2,6 +2,8 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 module Job.Say (
+  SayJob(..),
+  job,
 ) where
 
 import System.Hworker
