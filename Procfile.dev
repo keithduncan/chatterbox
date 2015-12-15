@@ -1,2 +1,3 @@
 web: cabal run chatterbox
-worker: cabal run chatterbox-worker
+work_monitor: cabal run chatterbox-work-monitor
+say_worker: cabal run chatterbox-say-worker
