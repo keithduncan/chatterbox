@@ -17,7 +17,7 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 executable chatterbox
-  main-is:             Web.hs
+  main-is:             Main.hs
   -- other-modules:
   -- other-extensions:
   build-depends: base >=4.8 && <4.9
@@ -35,11 +35,12 @@ executable chatterbox
                , wai-extra >=3.0 && <3.1
                , network-uri >=2.6 && <2.7
 
-  hs-source-dirs:      src
+  hs-source-dirs:      src/web
+                     , src/common
   default-language:    Haskell2010
 
 executable chatterbox-worker
-  main-is: Worker.hs
+  main-is: Main.hs
 
   build-depends: base >=4.8 && <4.9
                , time >= 1.5 && <1.6
@@ -48,5 +49,6 @@ executable chatterbox-worker
                , network-uri >=2.6 && <2.7
                , hworker >= 0.1 && <0.2
 
-  hs-source-dirs:     src
+  hs-source-dirs:     src/worker
+                    , src/common
   default-language:   Haskell2010
