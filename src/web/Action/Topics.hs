@@ -42,7 +42,8 @@ createMessage = do
         jsonError "unsupported content-type"
       Just m  -> do
         workqueue <- lift (asks workqueue)
-        v <- liftIO (enqueueSay workqueue (T.unpack topic) m)
+
+        liftIO (enqueueSay workqueue (T.unpack topic) m)
 
         status accepted202
         json Null
