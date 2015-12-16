@@ -13,7 +13,7 @@ import System.Hworker
 
 import Control.Monad (void)
 
-import Model.Message
+import Model.Message (Message)
 import Model.Subscription (Topic)
 
 import Job.Say
