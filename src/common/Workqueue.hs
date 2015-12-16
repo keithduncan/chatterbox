@@ -18,16 +18,16 @@ import Model.Subscription (Topic)
 
 import Job.Say
 
-type SayWorker = Hworker ()
+type SayWorker = Hworker () SayJob
 
-data Workqueue = Workqueue { getSayWorker :: Hworker () SayJob
+data Workqueue = Workqueue { getSayWorker :: SayWorker
                            }
 
 getWorkqueue :: IO Workqueue
 getWorkqueue = Workqueue <$>
   getSayHworker
 
-getSayHworker :: IO (Hworker () SayJob)
+getSayHworker :: IO SayWorker
 getSayHworker = create "say" ()
 
 enqueueSay :: Workqueue -> Topic -> Message -> IO ()
