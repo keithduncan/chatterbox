@@ -31,7 +31,7 @@ createMessage = do
     jsonError "missing topic parameter"
   else do
     contentType <- header "Content-Type"
-    let decoder = decoderForContentType <$> contentType
+    let decoder = decodeContentType <$> contentType
 
     b <- body
     let decoded = join (decoder <*> return b)
@@ -48,11 +48,11 @@ createMessage = do
         status accepted202
         json Null
 
-decoderForContentType :: Text -> ByteString -> Maybe Message
-decoderForContentType c b
+decodeContentType :: Text -> ByteString -> Maybe Message
+decodeContentType c b
   -- TODO check just the MIME type, ignore the MIME parameters
   | CI.mk c == "text/plain" = Just message
-decoderForContentType _ _ = Nothing
+decodeContentType _ _ = Nothing
 
 jsonError :: String -> ActionT Text ConfigM ()
 jsonError t = let err = Map.fromList [("message", t)] :: Map.Map String String
