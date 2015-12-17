@@ -2,17 +2,20 @@
 
 module Model.Message (
   Message,
-  message,
+  plainMessage,
 ) where
 
-import Data.Aeson
-import GHC.Generics
+import Data.Aeson (ToJSON (toJSON), FromJSON, genericToJSON, defaultOptions)
+import GHC.Generics (Generic)
+import Data.Text (Text)
 
-data Message = Message deriving (Show, Generic)
+data Message = Plain { getContent :: Text
+                     }
+               deriving (Show, Generic)
 
 instance ToJSON Message where
   toJSON = genericToJSON defaultOptions
 instance FromJSON Message
 
-message :: Message
-message = Message
+plainMessage :: Text -> Message
+plainMessage = Plain
