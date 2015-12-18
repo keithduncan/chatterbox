@@ -40,9 +40,9 @@ getWorkqueue = do
 getRedisConnection :: IO RedisConnection
 getRedisConnection = do
   uri <- join . (parseURI <$>) <$> lookupEnv "WORKQUEUE_REDIS"
-  case uri of
-    Nothing -> return $ RedisConnectInfo R.defaultConnectInfo
-    Just c  -> RedisConnection <$> R.connect (redisConnectionInfo c)
+  RedisConnection <$> R.connect (case uri of
+    Nothing -> R.defaultConnectInfo
+    Just c  -> redisConnectionInfo c)
 
 redisConnectionInfo :: URI -> R.ConnectInfo
 redisConnectionInfo (URI "redis" (Just (URIAuth auth regname port)) path _ _) =
