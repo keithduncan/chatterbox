@@ -10,6 +10,7 @@ module Workqueue (
 
 import System.Hworker
 import System.Environment (lookupEnv)
+import System.IO (stderr, hPrint)
 
 import Control.Monad (void, join)
 
@@ -79,11 +80,13 @@ redisConnectionInfo uri = error $ "invalid URI " ++ show uri
 getSayHworker :: RedisConnection -> IO SayWorker
 getSayHworker c = createWith $ (defaultHworkerConfig "say" ()) { hwconfigRedisConnectInfo = c
                                                                , hwconfigDebug = True
+                                                               , hwconfigLogger = hPrint stderr
                                                                }
 
 getExpiryHworker :: RedisConnection -> IO ExpiryWorker
 getExpiryHworker c = createWith $ (defaultHworkerConfig "expire" ()) { hwconfigRedisConnectInfo = c
                                                                      , hwconfigDebug = True
+                                                                     , hwconfigLogger = hPrint stderr
                                                                      }
 
 enqueueSay :: Workqueue -> Topic -> Message -> IO ()

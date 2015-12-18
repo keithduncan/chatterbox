@@ -7,6 +7,7 @@ module Job.Say (
 ) where
 
 import System.Hworker
+import System.IO (hPrint, stderr)
 
 import Control.Monad (void)
 
@@ -23,5 +24,5 @@ instance FromJSON SayJob
 
 instance Job () SayJob where
   job () (Say topic message) = do
-    void $ print (show message ++ " -> " ++ topic)
+    void $ hPrint stderr (show message ++ " -> " ++ topic)
     return Success
