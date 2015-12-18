@@ -24,7 +24,7 @@ import qualified Data.Text.Lazy as T
 import qualified Data.Text.Lazy.Encoding as E
 import qualified Data.Map as Map
 import Data.String
-import Data.ByteString.Lazy
+import Data.ByteString.Lazy (ByteString)
 import Data.Aeson (Value (Null))
 
 createMessage :: ActionT T.Text ConfigM ()
@@ -56,7 +56,7 @@ createMessage = do
 decodeContentType :: T.Text -> ByteString -> Maybe Message
 decodeContentType c b
   -- TODO check just the MIME type, ignore the MIME parameters
-  | CI.mk c == "text/plain" = Just (plainMessage $ E.decodeUtf8 b)
+  | CI.mk c == "text/plain" = Just (plainMessage (T.toStrict (E.decodeUtf8 b)))
 decodeContentType _ _ = Nothing
 
 jsonError :: String -> ActionT T.Text ConfigM ()
