@@ -77,10 +77,14 @@ redisConnectionInfo (URI "redis:" (Just (URIAuth auth regname port)) path _ _) =
 redisConnectionInfo uri = error $ "invalid URI " ++ show uri
 
 getSayHworker :: RedisConnection -> IO SayWorker
-getSayHworker c = createWith $ (defaultHworkerConfig "say" ()) { hwconfigRedisConnectInfo = c }
+getSayHworker c = createWith $ (defaultHworkerConfig "say" ()) { hwconfigRedisConnectInfo = c
+                                                               , hwconfigDebug = True
+                                                               }
 
 getExpiryHworker :: RedisConnection -> IO ExpiryWorker
-getExpiryHworker c = createWith $ (defaultHworkerConfig "expire" ()) { hwconfigRedisConnectInfo = c }
+getExpiryHworker c = createWith $ (defaultHworkerConfig "expire" ()) { hwconfigRedisConnectInfo = c
+                                                                     , hwconfigDebug = True
+                                                                     }
 
 enqueueSay :: Workqueue -> Topic -> Message -> IO ()
 enqueueSay workqueue topic message = void $ queue (getSayWorker workqueue) (Say topic message)
