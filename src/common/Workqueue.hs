@@ -45,7 +45,7 @@ getRedisConnection = do
     Just c  -> redisConnectionInfo c)
 
 redisConnectionInfo :: URI -> R.ConnectInfo
-redisConnectionInfo (URI "redis" (Just (URIAuth auth regname port)) path _ _) =
+redisConnectionInfo (URI "redis:" (Just (URIAuth auth regname port)) path _ _) =
   R.defaultConnectInfo { R.connectHost = regname
                        , R.connectPort = portNumber
                        , R.connectAuth = authentication
