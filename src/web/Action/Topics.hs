@@ -4,6 +4,8 @@ module Action.Topics (
   createMessage,
 ) where
 
+import System.Hworker (queue)
+
 import Control.Monad (join)
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Reader
@@ -13,7 +15,9 @@ import Network.HTTP.Types (badRequest400, ok200, unsupportedMediaType415, accept
 
 import Configuration
 import Model.Message (Message, plainMessage)
-import Workqueue (enqueueSay)
+import Model.Subscription (Topic)
+import Workqueue (Workqueue, getSayWorker)
+import Job.Say
 
 import qualified Data.CaseInsensitive as CI
 import qualified Data.Text.Lazy as T
@@ -23,9 +27,9 @@ import Data.String
 import Data.ByteString.Lazy
 import Data.Aeson (Value (Null))
 
-createMessage :: ActionT Text ConfigM ()
+createMessage :: ActionT T.Text ConfigM ()
 createMessage = do
-  topic <- param "topic" :: ActionT Text ConfigM Text
+  topic <- param "topic" :: ActionT T.Text ConfigM T.Text
   if T.null topic
   then do
     status badRequest400
@@ -58,3 +62,6 @@ decodeContentType _ _ = Nothing
 jsonError :: String -> ActionT T.Text ConfigM ()
 jsonError t = let err = Map.fromList [("message", t)] :: Map.Map String String
                in json err
+
+enqueueSay :: Workqueue -> Topic -> Message -> IO ()
+enqueueSay workqueue topic message = void $ queue (getSayWorker workqueue) (Say topic message)

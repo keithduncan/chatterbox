@@ -2,11 +2,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Workqueue (
-  Workqueue,
-
+  Workqueue(..),
   getWorkqueue,
-
-  enqueueSay,
 ) where
 
 import System.Hworker
@@ -17,18 +14,22 @@ import Model.Message (Message)
 import Model.Subscription (Topic)
 
 import Job.Say
+import Job.Expire
 
 type SayWorker = Hworker () SayJob
+type ExpiryWorker = Hworker () ExpireJob
 
 data Workqueue = Workqueue { getSayWorker :: SayWorker
+                           , getExpiryWorker :: ExpiryWorker
                            }
 
 getWorkqueue :: IO Workqueue
 getWorkqueue = Workqueue <$>
-  getSayHworker
+  getSayHworker <*>
+  getExpiryHworker
 
 getSayHworker :: IO SayWorker
 getSayHworker = create "say" ()
 
-enqueueSay :: Workqueue -> Topic -> Message -> IO ()
-enqueueSay (Workqueue sayWorker) topic message = void $ queue sayWorker (Say topic message)
+getExpiryHworker :: IO ExpiryWorker
+getExpiryHworker = create "expire" ()
