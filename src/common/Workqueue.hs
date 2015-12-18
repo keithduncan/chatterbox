@@ -46,7 +46,7 @@ getRedisConnection = do
 
 redisConnectionInfo :: URI -> R.ConnectInfo
 redisConnectionInfo (URI "redis:" (Just (URIAuth auth regname port)) path _ _) =
-  R.defaultConnectInfo { R.connectHost = regname
+  R.defaultConnectInfo { R.connectHost = regname'
                        , R.connectPort = portNumber
                        , R.connectAuth = authentication
                        , R.connectDatabase = database
@@ -58,6 +58,8 @@ redisConnectionInfo (URI "redis:" (Just (URIAuth auth regname port)) path _ _) =
     stripLeading x xs@(xsHead:xsTail)
       | x == xsHead = xsTail
       | otherwise   = xs
+
+    regname' = takeWhile (/=']') . dropWhile (=='[') $ regname
 
     portNumber = if null port
                  then R.connectPort R.defaultConnectInfo
