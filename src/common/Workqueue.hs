@@ -71,7 +71,7 @@ redisConnectionInfo (URI "redis:" (Just (URIAuth auth regname port)) path _ _) =
                 in if null db
                    then R.connectDatabase R.defaultConnectInfo
                    else read db
-redisConnectionInfo _ = R.defaultConnectInfo
+redisConnectionInfo uri = error $ "invalid URI " ++ show uri
 
 getSayHworker :: RedisConnection -> IO SayWorker
 getSayHworker c = createWith $ (defaultHworkerConfig "say" ()) { hwconfigRedisConnectInfo = c }
