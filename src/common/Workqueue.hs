@@ -7,11 +7,17 @@ module Workqueue (
 ) where
 
 import System.Hworker
+import System.Environment (lookupEnv)
 
-import Control.Monad (void)
+import Control.Monad (void, join)
 
 import Model.Message (Message)
 import Model.Subscription (Topic)
+
+import qualified Database.Redis as R
+import Network.URI
+
+import Data.ByteString.Char8 (pack)
 
 import Job.Say
 import Job.Expire
@@ -24,12 +30,57 @@ data Workqueue = Workqueue { getSayWorker :: SayWorker
                            }
 
 getWorkqueue :: IO Workqueue
-getWorkqueue = Workqueue <$>
-  getSayHworker <*>
-  getExpiryHworker
+getWorkqueue = do
+  redis <- getRedisConnection
 
-getSayHworker :: IO SayWorker
-getSayHworker = create "say" ()
+  Workqueue <$>
+    getSayHworker redis <*>
+    getExpiryHworker redis
 
-getExpiryHworker :: IO ExpiryWorker
-getExpiryHworker = create "expire" ()
+getRedisConnection :: IO RedisConnection
+getRedisConnection = do
+  uri <- join . (parseURI <$>) <$> lookupEnv "WORKQUEUE_REDIS"
+  case uri of
+    Nothing -> return $ RedisConnectInfo R.defaultConnectInfo
+    Just c  -> do
+      redis <- connectRedis c
+      return $ RedisConnection redis
+
+connectRedis :: URI -> IO R.Connection
+connectRedis uri = let info = redisConnectionInfo uri
+                    in return undefined
+
+redisConnectionInfo :: URI -> R.ConnectInfo
+redisConnectionInfo (URI "redis" (Just (URIAuth auth regname port)) path _ _) =
+  R.defaultConnectInfo { R.connectHost = regname
+                       , R.connectPort = portNumber
+                       , R.connectAuth = authentication
+                       , R.connectDatabase = database
+                       }
+
+  where
+    stripLeading :: Eq a => a -> [a] -> [a]
+    stripLeading x [] = []
+    stripLeading x xs@(xsHead:xsTail)
+      | x == xsHead = xsTail
+      | otherwise   = xs
+
+    portNumber = if null port
+                 then R.connectPort R.defaultConnectInfo
+                 else R.PortNumber . fromInteger . read $ stripLeading ':' port
+
+    authentication = if null auth
+                     then Nothing
+                     else Just (pack auth)
+
+    database = let db = stripLeading '/' path
+                in if null db
+                   then R.connectDatabase R.defaultConnectInfo
+                   else read db
+redisConnectionInfo _ = R.defaultConnectInfo
+
+getSayHworker :: RedisConnection -> IO SayWorker
+getSayHworker c = create "say" ()
+
+getExpiryHworker :: RedisConnection -> IO ExpiryWorker
+getExpiryHworker c = create "expire" ()

@@ -37,6 +37,8 @@ executable chatterbox
                , hworker >= 0.1 && <0.2
                , bytestring >= 0.10 && <0.11
                , case-insensitive >=1.2 && <1.3
+               , hedis >= 0.6 && <0.7
+               , network-uri >= 2.6 && < 2.7
 
   hs-source-dirs:      src/web
                      , src/common
@@ -52,6 +54,8 @@ executable chatterbox-worker
                , network-uri >=2.6 && <2.7
                , hworker >= 0.1 && <0.2
                , text >=1.2 && <1.3
+               , hedis >= 0.6 && <0.7
+               , network-uri >= 2.6 && < 2.7
 
   hs-source-dirs:     src/worker
                     , src/common
