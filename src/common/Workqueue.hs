@@ -10,6 +10,7 @@ module Workqueue (
 
 import System.Hworker
 import System.Environment (lookupEnv)
+import Environment
 import System.IO (stderr, hPrint)
 
 import Control.Monad (void, join)
@@ -38,9 +39,11 @@ getWorkqueue :: IO Workqueue
 getWorkqueue = do
   redis <- getRedisConnection
 
+  env <- getEnvironment
+
   Workqueue <$>
-    getSayHworker redis <*>
-    getExpiryHworker redis
+    getSayHworker env redis <*>
+    getExpiryHworker env redis
 
 getRedisConnection :: IO RedisConnection
 getRedisConnection = do
@@ -77,15 +80,15 @@ redisConnectionInfo (URI "redis:" (Just (URIAuth auth regname port)) path _ _) =
     stripTrailing x xs = maybe xs reverse $ stripPrefix [x] (reverse xs)
 redisConnectionInfo uri = error $ "invalid URI " ++ show uri
 
-getSayHworker :: RedisConnection -> IO SayWorker
-getSayHworker c = createWith $ (defaultHworkerConfig "say" ()) { hwconfigRedisConnectInfo = c
-                                                               , hwconfigDebug = True
+getSayHworker :: Environment -> RedisConnection -> IO SayWorker
+getSayHworker e c = createWith $ (defaultHworkerConfig "say" ()) { hwconfigRedisConnectInfo = c
+                                                               , hwconfigDebug = e == Development
                                                                , hwconfigLogger = hPrint stderr
                                                                }
 
-getExpiryHworker :: RedisConnection -> IO ExpiryWorker
-getExpiryHworker c = createWith $ (defaultHworkerConfig "expire" ()) { hwconfigRedisConnectInfo = c
-                                                                     , hwconfigDebug = True
+getExpiryHworker :: Environment -> RedisConnection -> IO ExpiryWorker
+getExpiryHworker e c = createWith $ (defaultHworkerConfig "expire" ()) { hwconfigRedisConnectInfo = c
+                                                                     , hwconfigDebug = e == Development
                                                                      , hwconfigLogger = hPrint stderr
                                                                      }
 

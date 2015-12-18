@@ -5,7 +5,7 @@ module Environment (
 
 import System.Environment (lookupEnv)
 
-data Environment = Development | Production
+data Environment = Development | Production deriving (Eq)
 
 instance Read Environment where
   readsPrec _ e = case e of
