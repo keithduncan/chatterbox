@@ -16,7 +16,7 @@ import Network.HTTP.Types (badRequest400, ok200, unsupportedMediaType415, accept
 import Configuration
 import Model.Message (Message, plainMessage)
 import Model.Subscription (Topic)
-import Workqueue (Workqueue, getSayWorker)
+import Workqueue (Workqueue, enqueueSay)
 import Job.Say
 
 import qualified Data.CaseInsensitive as CI
@@ -62,6 +62,3 @@ decodeContentType _ _ = Nothing
 jsonError :: String -> ActionT T.Text ConfigM ()
 jsonError t = let err = Map.fromList [("message", t)] :: Map.Map String String
                in json err
-
-enqueueSay :: Workqueue -> Topic -> Message -> IO ()
-enqueueSay workqueue topic message = void $ queue (getSayWorker workqueue) (Say topic message)

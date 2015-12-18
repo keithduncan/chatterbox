@@ -4,6 +4,8 @@
 module Workqueue (
   Workqueue(..),
   getWorkqueue,
+
+  enqueueSay,
 ) where
 
 import System.Hworker
@@ -79,3 +81,6 @@ getSayHworker c = createWith $ (defaultHworkerConfig "say" ()) { hwconfigRedisCo
 
 getExpiryHworker :: RedisConnection -> IO ExpiryWorker
 getExpiryHworker c = createWith $ (defaultHworkerConfig "expire" ()) { hwconfigRedisConnectInfo = c }
+
+enqueueSay :: Workqueue -> Topic -> Message -> IO ()
+enqueueSay workqueue topic message = void $ queue (getSayWorker workqueue) (Say topic message)
