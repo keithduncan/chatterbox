@@ -74,7 +74,7 @@ redisConnectionInfo (URI "redis" (Just (URIAuth auth regname port)) path _ _) =
 redisConnectionInfo _ = R.defaultConnectInfo
 
 getSayHworker :: RedisConnection -> IO SayWorker
-getSayHworker c = create "say" ()
+getSayHworker c = createWith $ (defaultHworkerConfig "say" ()) { hwconfigRedisConnectInfo = c }
 
 getExpiryHworker :: RedisConnection -> IO ExpiryWorker
-getExpiryHworker c = create "expire" ()
+getExpiryHworker c = createWith $ (defaultHworkerConfig "expire" ()) { hwconfigRedisConnectInfo = c }
