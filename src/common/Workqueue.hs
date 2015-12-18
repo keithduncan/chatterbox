@@ -53,26 +53,32 @@ redisConnectionInfo (URI "redis:" (Just (URIAuth auth regname port)) path _ _) =
                        }
 
   where
-    stripLeading :: Eq a => a -> [a] -> [a]
-    stripLeading x [] = []
-    stripLeading x xs@(xsHead:xsTail)
-      | x == xsHead = xsTail
-      | otherwise   = xs
-
     regname' = takeWhile (/=']') . dropWhile (=='[') $ regname
 
     portNumber = if null port
                  then R.connectPort R.defaultConnectInfo
                  else R.PortNumber . fromInteger . read $ stripLeading ':' port
 
-    authentication = if null auth
-                     then Nothing
-                     else Just (pack auth)
+    authentication = case break (==':') (stripTrailing '@' auth) of
+                       (u, ':':p) -> Just (pack p)
+                       _          -> Nothing
 
     database = let db = stripLeading '/' path
                 in if null db
                    then R.connectDatabase R.defaultConnectInfo
                    else read db
+
+    stripLeading :: Eq a => a -> [a] -> [a]
+    stripLeading x [] = []
+    stripLeading x xs@(xsHead:xsTail)
+      | x == xsHead = xsTail
+      | otherwise   = xs
+
+    stripTrailing :: a -> [a] -> [a]
+    stripTrailing x [] = []
+    stripTrailing x xs = let init' = init xs
+                             tail' = tail xs
+                          in init'
 redisConnectionInfo uri = error $ "invalid URI " ++ show uri
 
 getSayHworker :: RedisConnection -> IO SayWorker
