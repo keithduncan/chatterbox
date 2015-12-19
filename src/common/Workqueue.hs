@@ -24,6 +24,7 @@ import Network.URI
 import Data.ByteString.Char8 (pack)
 import Data.List (stripPrefix)
 import Data.Maybe (fromMaybe)
+import Data.Text (Text)
 
 import Job.Say
 import Job.Expire
@@ -81,16 +82,16 @@ redisConnectionInfo (URI "redis:" (Just (URIAuth auth regname port)) path _ _) =
 redisConnectionInfo uri = error $ "invalid URI " ++ show uri
 
 getSayHworker :: Environment -> RedisConnection -> IO SayWorker
-getSayHworker e c = createWith $ (defaultHworkerConfig "say" ()) { hwconfigRedisConnectInfo = c
-                                                               , hwconfigDebug = e == Development
-                                                               , hwconfigLogger = hPrint stderr
-                                                               }
+getSayHworker = getHworker "say" ()
 
 getExpiryHworker :: Environment -> RedisConnection -> IO ExpiryWorker
-getExpiryHworker e c = createWith $ (defaultHworkerConfig "expire" ()) { hwconfigRedisConnectInfo = c
-                                                                     , hwconfigDebug = e == Development
-                                                                     , hwconfigLogger = hPrint stderr
-                                                                     }
+getExpiryHworker = getHworker "expire" ()
+
+getHworker :: Job a b => Text -> a -> Environment -> RedisConnection -> IO (Hworker a b)
+getHworker q s e c = createWith $ (defaultHworkerConfig q s) { hwconfigRedisConnectInfo = c
+                                                             , hwconfigDebug = e == Development
+                                                             , hwconfigLogger = hPrint stderr
+                                                             }
 
 enqueueSay :: Workqueue -> Topic -> Message -> IO ()
 enqueueSay workqueue topic message = void $ queue (getSayWorker workqueue) (Say topic message)
