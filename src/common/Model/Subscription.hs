@@ -5,18 +5,20 @@ module Model.Subscription (
   getTopic,
   getExpiry,
 
+  Adapter,
   Topic,
 ) where
 
 import Network.URI (URI)
 import Data.Time.Clock.POSIX (POSIXTime)
 
+type Adapter = URI
 type Topic = String
 
-data Subscription = Subscription { getURI :: URI
+data Subscription = Subscription { getURI :: Adapter
                                  , getTopic :: Topic
                                  , getExpiry :: POSIXTime
                                  }
 
-subscription :: URI -> Topic -> POSIXTime -> Subscription
+subscription :: Adapter -> Topic -> POSIXTime -> Subscription
 subscription = Subscription
