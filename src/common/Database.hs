@@ -17,6 +17,7 @@ import Data.Text (pack)
 import Data.Text.Encoding (encodeUtf8)
 import Data.List (stripPrefix)
 import Data.Maybe (fromMaybe)
+import Data.Bool (bool)
 
 import Database.Persist as DB
 import Database.Persist.Postgresql as DB
@@ -42,7 +43,7 @@ postgresConnectionInfo (URI "postgres:" (Just (URIAuth auth regname port)) path 
   , ("password", password)
 
   , ("host", regname)
-  , ("port", stripLeading ':' port)
+  , ("port", port')
 
   , ("dbname", stripLeading '/' path)
   ]
@@ -51,6 +52,11 @@ postgresConnectionInfo (URI "postgres:" (Just (URIAuth auth regname port)) path 
     (user, password) = case break (==':') (stripTrailing '@' auth) of
                          (u, ':':p) -> (u, p)
                          _          -> ("", "")
+
+    port' = let p = stripLeading ':' port
+             in bool defaultPort p (null p)
+
+    defaultPort = "5432"
 
     stripLeading x xs = fromMaybe xs $ stripPrefix [x] xs
     stripTrailing x xs = maybe xs reverse $ stripPrefix [x] (reverse xs)
