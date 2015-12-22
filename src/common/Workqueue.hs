@@ -10,7 +10,7 @@ module Workqueue (
 
 import System.Hworker
 import System.Environment (lookupEnv)
-import Environment
+import Environment (Environment(..), getEnvironment, getEnvironmentURI)
 import System.IO (stderr, hPrint)
 
 import Control.Monad (void, join)
@@ -48,10 +48,9 @@ getWorkqueue = do
 
 getRedisConnection :: IO RedisConnection
 getRedisConnection = do
-  uri <- join . (parseURI <$>) <$> lookupEnv "WORKQUEUE_REDIS"
-  RedisConnection <$> R.connect (case uri of
-    Nothing -> R.defaultConnectInfo
-    Just c  -> redisConnectionInfo c)
+  uri <- getEnvironmentURI "WORKQUEUE_URL"
+  RedisConnection <$>
+    (R.connect . redisConnectionInfo) uri
 
 redisConnectionInfo :: URI -> R.ConnectInfo
 redisConnectionInfo (URI "redis:" (Just (URIAuth auth regname port)) path _ _) =
