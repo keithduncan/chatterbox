@@ -67,6 +67,3 @@ createConnectionString l = encodeUtf8 . pack . unwords $ pair <$> l
   where
     pair :: (String, String) -> String
     pair (k, v) = concat [k, "=", v]
-
-subscriptionsWhere :: Database -> [(String, String)] -> [Subscription]
-subscriptionsWhere = undefined
