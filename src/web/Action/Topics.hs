@@ -56,7 +56,7 @@ createMessage = do
 decodeContentType :: T.Text -> ByteString -> Maybe Message
 decodeContentType c b
   -- TODO check just the MIME type, ignore the MIME parameters
-  | CI.mk c == "text/plain" = Just (plainMessage (T.toStrict (E.decodeUtf8 b)))
+  | CI.mk c == "text/plain" = Just $ (plainMessage . T.toStrict . E.decodeUtf8) b
 decodeContentType _ _ = Nothing
 
 jsonError :: String -> ActionT T.Text ConfigM ()
