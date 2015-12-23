@@ -10,15 +10,15 @@ module Model.Subscription (
 ) where
 
 import Network.URI (URI)
-import Data.Time.Clock.POSIX (POSIXTime)
+import Data.Time (UTCTime)
 
 type Adapter = URI
 type Topic = String
 
 data Subscription = Subscription { getURI :: Adapter
                                  , getTopic :: Topic
-                                 , getExpiry :: POSIXTime
+                                 , getExpiry :: Maybe UTCTime
                                  }
 
-subscription :: Adapter -> Topic -> POSIXTime -> Subscription
+subscription :: Adapter -> Topic -> Maybe UTCTime -> Subscription
 subscription = Subscription

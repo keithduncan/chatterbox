@@ -18,6 +18,7 @@ import Database
 listSubscriptions :: ActionT Text ConfigM ()
 listSubscriptions = do
   database <- lift (asks database)
+
   json Null
 
 createSubscription :: ActionT Text ConfigM ()

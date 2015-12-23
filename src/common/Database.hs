@@ -2,21 +2,27 @@ module Database (
   Database,
 
   getDatabase,
+
+  adapterSubscriptions,
+  topicSubscriptions,
+
+  deleteExpiredSubscriptions,
 ) where
 
 import Control.Monad (join)
 import Control.Monad.Logger (runStderrLoggingT)
 
+import qualified Schema as S
 import Model.Subscription
 
 import Environment (getEnvironmentURI)
 
-import Network.URI (URI(..), URIAuth(..))
+import Network.URI (URI(..), URIAuth(..), parseURI)
 
-import Data.Text (pack)
+import Data.Text (pack, unpack)
 import Data.Text.Encoding (encodeUtf8)
 import Data.List (stripPrefix)
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, catMaybes)
 import Data.Bool (bool)
 
 import Database.Persist as DB
@@ -67,3 +73,23 @@ createConnectionString l = encodeUtf8 . pack . unwords $ pair <$> l
   where
     pair :: (String, String) -> String
     pair (k, v) = concat [k, "=", v]
+
+adapterSubscriptions :: Database -> Adapter -> IO [Subscription]
+adapterSubscriptions db adapter = do
+  subscriptions <- runSqlPool (selectList [S.SubscriptionAdapter ==. (pack . show) adapter] []) (getConnectionPool db)
+  return $ catMaybes $ viewModel . entityVal <$> subscriptions
+
+topicSubscriptions :: Database -> Topic -> IO [Subscription]
+topicSubscriptions db topic = do
+  subscriptions <- runSqlPool (selectList [S.SubscriptionTopic ==. pack topic] []) (getConnectionPool db)
+  return $ catMaybes $ viewModel . entityVal <$> subscriptions
+
+viewModel :: S.Subscription -> Maybe Subscription
+viewModel s = (\a -> subscription a topic expiry) <$> adapter
+  where
+    adapter = (parseURI . unpack . S.subscriptionAdapter) s
+    topic = (unpack . S.subscriptionTopic) s
+    expiry = S.subscriptionExpiry s
+
+deleteExpiredSubscriptions :: Database -> IO ()
+deleteExpiredSubscriptions db = undefined
