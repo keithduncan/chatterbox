@@ -31,8 +31,10 @@ platforms such as Campfire, Slack or IRC.
 
 - [ ] subscription management
   - [ ] HTTP API
-  - [ ] database storage
-  - [ ] auto-expiring subscription of an adapter to a topic
+  - [x] database storage
+  - [x] auto-expiring subscription of an adapter to a topic
+
+- [ ] database migrate executable
 
 - [ ] chat adapters
   - [ ] campfire
