@@ -30,6 +30,7 @@ platforms such as Campfire, Slack or IRC.
 - [x] hworker implementation
 
 - [ ] subscription management
+  - [ ] HTTP API
   - [ ] database storage
   - [ ] auto-expiring subscription of an adapter to a topic
 
