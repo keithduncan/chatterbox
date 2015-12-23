@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module Database (
   Database,
 
@@ -79,14 +81,13 @@ createConnectionString l = encodeUtf8 . pack . unwords $ pair <$> l
     pair (k, v) = concat [k, "=", v]
 
 adapterSubscriptions :: Database -> Adapter -> IO [Subscription]
-adapterSubscriptions db adapter = do
-  subscriptions <- runSqlPool (selectList [S.SubscriptionAdapter ==. (pack . show) adapter] []) (getConnectionPool db)
-  return $ catMaybes $ viewModel . entityVal <$> subscriptions
+adapterSubscriptions db adapter = viewModels <$> sql db (selectList [S.SubscriptionAdapter ==. (pack . show) adapter] [])
 
 topicSubscriptions :: Database -> Topic -> IO [Subscription]
-topicSubscriptions db topic = do
-  subscriptions <- runSqlPool (selectList [S.SubscriptionTopic ==. pack topic] []) (getConnectionPool db)
-  return $ catMaybes $ viewModel . entityVal <$> subscriptions
+topicSubscriptions db topic = viewModels <$> sql db (selectList [S.SubscriptionTopic ==. pack topic] [])
+
+viewModels :: [Entity S.Subscription] -> [Subscription]
+viewModels = catMaybes . (viewModel . entityVal <$>)
 
 viewModel :: S.Subscription -> Maybe Subscription
 viewModel s = (\a -> subscription a topic expiry) <$> adapter
@@ -99,7 +100,9 @@ viewModel s = (\a -> subscription a topic expiry) <$> adapter
 deleteExpiredSubscriptions :: Database -> IO ()
 deleteExpiredSubscriptions db = do
   now <- getCurrentTime
-  void $ runSqlPool (deleteWhere [S.SubscriptionExpiry <. Just now]) (getConnectionPool db)
+  void $ sql db (deleteWhere [S.SubscriptionExpiry <. Just now])
+
+sql db = flip runSqlPool (getConnectionPool db)
 
 runMigration :: Database -> IO ()
 runMigration db = flip runSqlPersistMPool (getConnectionPool db) $ DB.runMigration S.migrateAll
