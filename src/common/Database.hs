@@ -9,7 +9,7 @@ module Database (
   deleteExpiredSubscriptions,
 ) where
 
-import Control.Monad (join)
+import Control.Monad (join, void)
 import Control.Monad.Logger (runStderrLoggingT)
 
 import qualified Schema as S
@@ -24,6 +24,7 @@ import Data.Text.Encoding (encodeUtf8)
 import Data.List (stripPrefix)
 import Data.Maybe (fromMaybe, catMaybes)
 import Data.Bool (bool)
+import Data.Time.Clock (getCurrentTime)
 
 import Database.Persist as DB
 import Database.Persist.Postgresql as DB
@@ -92,4 +93,6 @@ viewModel s = (\a -> subscription a topic expiry) <$> adapter
     expiry = S.subscriptionExpiry s
 
 deleteExpiredSubscriptions :: Database -> IO ()
-deleteExpiredSubscriptions db = undefined
+deleteExpiredSubscriptions db = do
+  now <- getCurrentTime
+  void $ runSqlPool (deleteWhere [S.SubscriptionExpiry <. Just now]) (getConnectionPool db)
