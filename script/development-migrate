@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec foreman run --env .env.dev cabal run chatterbox-migrate
