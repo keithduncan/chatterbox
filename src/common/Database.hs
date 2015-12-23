@@ -62,7 +62,7 @@ postgresConnectionInfo (URI "postgres:" (Just (URIAuth auth regname port)) path 
                          _          -> ("", "")
 
     port' = let p = stripLeading ':' port
-             in bool defaultPort p (null p)
+             in bool p defaultPort (null p)
 
     defaultPort = "5432"
 
