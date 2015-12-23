@@ -1,7 +1,7 @@
 module Model.Subscription (
   Subscription,
   subscription,
-  getURI,
+  getAdapter,
   getTopic,
   getExpiry,
 

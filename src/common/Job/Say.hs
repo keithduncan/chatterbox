@@ -9,6 +9,8 @@ module Job.Say (
 import System.Hworker
 import System.IO (hPrint, stderr)
 
+import Control.Monad (forM_)
+
 import Model.Message
 import Model.Subscription (Adapter, Topic, getAdapter)
 
@@ -24,11 +26,14 @@ instance FromJSON SayJob
 
 instance Job () SayJob where
   job () (Say topic message) = do
-    hPrint stderr ("delivering `" ++ show message ++ "` -> `" ++ topic ++ "`")
+    print ("delivering `" ++ show message ++ "` -> `" ++ topic ++ "`")
 
     subscriptions <- getDatabase >>= flip topicSubscriptions topic
 
     forM_ subscriptions $ \s ->
-      hPrint stderr ("delivering `" ++ show message ++ "` -> `" ++ (show . getAdapter s) ++ "`")
+      print ("delivering `" ++ show message ++ "` -> `" ++ (show . getAdapter) s ++ "`")
 
     return Success
+
+    where
+      print = hPrint stderr
