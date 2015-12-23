@@ -34,6 +34,8 @@ platforms such as Campfire, Slack or IRC.
   - [x] database storage
   - [x] auto-expiring subscription of an adapter to a topic
 
+- [ ] run expire job periodically
+
 - [x] database migrate executable
 
 - [ ] chat adapters
