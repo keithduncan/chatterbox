@@ -15,7 +15,7 @@ import Data.Time (UTCTime)
 type Adapter = URI
 type Topic = String
 
-data Subscription = Subscription { getURI :: Adapter
+data Subscription = Subscription { getAdapter :: Adapter
                                  , getTopic :: Topic
                                  , getExpiry :: Maybe UTCTime
                                  }

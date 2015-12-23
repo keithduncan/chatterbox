@@ -9,13 +9,13 @@ module Job.Say (
 import System.Hworker
 import System.IO (hPrint, stderr)
 
-import Control.Monad (void)
-
 import Model.Message
-import Model.Subscription (Topic)
+import Model.Subscription (Adapter, Topic, getAdapter)
 
 import Data.Aeson (FromJSON, ToJSON)
 import GHC.Generics (Generic)
+
+import Database
 
 data SayJob = Say Topic Message deriving (Show, Generic)
 
@@ -24,5 +24,11 @@ instance FromJSON SayJob
 
 instance Job () SayJob where
   job () (Say topic message) = do
-    void $ hPrint stderr (show message ++ " -> " ++ topic)
+    hPrint stderr ("delivering `" ++ show message ++ "` -> `" ++ topic ++ "`")
+
+    subscriptions <- getDatabase >>= flip topicSubscriptions topic
+
+    forM_ subscriptions $ \s ->
+      hPrint stderr ("delivering `" ++ show message ++ "` -> `" ++ (show . getAdapter s) ++ "`")
+
     return Success
