@@ -2,7 +2,7 @@ module Database (
   Database,
 
   getDatabase,
-  runMigration,
+  Database.runMigration,
 
   adapterSubscriptions,
   topicSubscriptions,
