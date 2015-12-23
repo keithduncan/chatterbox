@@ -8,13 +8,10 @@ module Job.Expire (
 
 import System.Hworker
 
-import Control.Monad (void)
-
-import Model.Message
-import Model.Subscription (Topic)
-
 import Data.Aeson (FromJSON, ToJSON)
 import GHC.Generics (Generic)
+
+import Database
 
 data ExpireJob = Expire deriving (Show, Generic)
 
@@ -23,5 +20,10 @@ instance FromJSON ExpireJob
 
 instance Job () ExpireJob where
   job () Expire = do
-    void $ print "expiring old subscriptions..."
+    print "expiring old subscriptions..."
+
+    getDatabase >>= deleteExpiredSubscriptions
+
+    print "old subscriptions expired"
+
     return Success
