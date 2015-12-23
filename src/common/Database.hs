@@ -2,7 +2,9 @@ module Database (
   Database,
 
   getDatabase,
+
   Database.runMigration,
+  Database.printMigration,
 
   adapterSubscriptions,
   topicSubscriptions,
@@ -100,4 +102,7 @@ deleteExpiredSubscriptions db = do
   void $ runSqlPool (deleteWhere [S.SubscriptionExpiry <. Just now]) (getConnectionPool db)
 
 runMigration :: Database -> IO ()
-runMigration db = flip runSqlPersistMPool (getConnectionPool db) $ printMigration S.migrateAll
+runMigration db = flip runSqlPersistMPool (getConnectionPool db) $ DB.runMigration S.migrateAll
+
+printMigration :: Database -> IO ()
+printMigration db = flip runSqlPersistMPool (getConnectionPool db) $ DB.printMigration S.migrateAll
