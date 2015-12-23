@@ -92,6 +92,7 @@ viewModel s = (\a -> subscription a topic expiry) <$> adapter
     topic = (unpack . S.subscriptionTopic) s
     expiry = S.subscriptionExpiry s
 
+-- TODO check this doesn't delete entries with a NULL expiry time
 deleteExpiredSubscriptions :: Database -> IO ()
 deleteExpiredSubscriptions db = do
   now <- getCurrentTime
