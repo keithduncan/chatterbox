@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec foreman run cabal repl --env .env.dev
